@@ -3,6 +3,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <cv_bridge/cv_bridge.h>
 #include <sstream> //for converting the command line parameter to integer
+#include <cstdio>
 
 int main(int argc, char** argv){
     //Check if the video source has been passed as a parameter
@@ -14,12 +15,13 @@ int main(int argc, char** argv){
     image_transport::Publisher pub = it.advertise("camera/image",1);
 
     //Convert the passed command line parameter as index for the video device to an integer
-    std::istringstream video_sourcedCmd(argv[1]);
-    int video_source;
-    //Check if it is indeed a number
-    if(!(video_sourcedCmd >> video_source)) return 1;
+//    printf("Converting passed parameters to video device address. TEST!\n");
+//    std::istringstream video_sourcedCmd(argv[1]); //this is the faulting line!
+//    int video_source;
+//    //Check if it is indeed a number
+//    if(!(video_sourcedCmd >> video_source)) return 1;
 
-    cv::VideoCapture cap(video_source);
+    cv::VideoCapture cap(0);
     //Check if video device canbe opened with the given index
     if(!cap.isOpened()) return 1;
     cv::Mat frame;
@@ -38,4 +40,7 @@ int main(int argc, char** argv){
         ros::spinOnce();
         loop_rate.sleep();
     }
+    printf("Something happened. I'm exiting!\n");
+
+    return 0;
 }
