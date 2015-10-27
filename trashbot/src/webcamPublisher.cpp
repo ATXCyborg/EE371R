@@ -21,18 +21,18 @@ int main(int argc, char** argv){
 //    //Check if it is indeed a number
 //    if(!(video_sourcedCmd >> video_source)) return 1;
 
-    cv::VideoCapture cap(0);
+    cv::VideoCapture cap(2);
     //Check if video device canbe opened with the given index
     if(!cap.isOpened()) return 1;
     cv::Mat frame;
     sensor_msgs::ImagePtr msg;
 
-    ros::Rate loop_rate(5);
+    ros::Rate loop_rate(30);
     while(nh.ok()){
         cap >> frame;
         //Check if grabbed frame is actually full with some content
         if(!frame.empty()){
-            msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", frame).toImageMsg();
+            msg = cv_bridge::CvImage(std_msgs::Header(), "mono8", frame).toImageMsg();
             pub.publish(msg);
             cv::waitKey(1);
         }
