@@ -1,0 +1,15 @@
+<launch>
+
+    <group ns="leftCam">
+        <node pkg="trashbot" name="camera" type="webcam_publisher" args="2">
+            <remap from="camera/image" to="camera/raw/image"/>
+        </node>
+    </group>
+
+    <group ns="rightCam">
+        <node pkg="trashbot" name="camera" type="webcam_publisher" args="1">
+            <remap from="camera/image" to="camera/raw/image"/>
+        </node>
+    </group>
+
+</launch>

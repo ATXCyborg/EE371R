@@ -11,7 +11,7 @@ int main(int argc, char** argv){
     int leftAddress;
 
     //Check if the video source has been passed as a parameter
-    if((argv[1] == NULL) && (argv[2] == NULL)){
+    if((argv[1] == NULL)){
         return 1;
     }
 
@@ -27,7 +27,6 @@ int main(int argc, char** argv){
 //    //Check if it is indeed a number
 //    if(!(video_sourcedCmd >> video_source)) return 1;
     leftAddress = atoi(argv[1]);
-    rightAddress = atoi(argv[2]);
     cv::VideoCapture cap(leftAddress);
     //Check if video device canbe opened with the given index
     if(!cap.isOpened()) return 1;
@@ -39,7 +38,7 @@ int main(int argc, char** argv){
         cap >> frame;
         //Check if grabbed frame is actually full with some content
         if(!frame.empty()){
-            msg = cv_bridge::CvImage(std_msgs::Header(), "mono8", frame).toImageMsg();
+            msg = cv_bridge::CvImage(std_msgs::Header(), "bgr8", frame).toImageMsg();
             pub.publish(msg);
             cv::waitKey(1);
         }
