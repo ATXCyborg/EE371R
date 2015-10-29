@@ -2,15 +2,20 @@
 
     <remap from="/leftCamViewer/camera/image" to="/leftCam/camera/raw/image"/>
     <remap from="/rightCamViewer/camera/image" to="/rightCam/camera/raw/image"/>
+    <remap from="/imageConverter/camera/image" to="/rightCam/camera/raw/image"/>
 
     <include file="$(find trashbot)/launch/cameraInit.launch"/>
 
     <group ns="leftCamViewer">
-        <node pkg="trashbot" name="camViewer" type="webcam_subscriber"/>
+        <node pkg="trashbot" name="camViewer" type="stream_viewer"/>
     </group>
 
     <group ns="rightCamViewer">
-        <node pkg="trashbot" name="camViewer" type="webcam_subscriber"/>
+        <node pkg="trashbot" name="camViewer" type="stream_viewer"/>
+    </group>
+
+    <group ns="imageConverter">
+        <node pkg="trashbot" name="converter" type="image_converter"/>
     </group>
 
 </launch>
