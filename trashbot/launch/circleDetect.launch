@@ -1,0 +1,16 @@
+<launch>
+
+    <remap from="/leftHSVImageConverter/camera/image" to="/leftCam/camera/raw/image"/>
+    <remap from="/rightHSVImageConverter/camera/image" to="/rightCam/camera/raw/image"/>
+
+    <include file="$(find trashbot)/launch/cameraInit.launch"/>
+
+    <group ns="leftHSVImageConverter">
+        <node pkg="trashbot" name="HSVViewer" type="image2hsv_converter"/>
+    </group>
+
+    <group ns="rightHSVImageConverter">
+        <node pkg="trashbot" name="HSVViewer" type="image2hsv_converter"/>
+    </group>
+
+</launch>
