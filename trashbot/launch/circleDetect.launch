@@ -1,7 +1,9 @@
 <launch>
 
+    <remap from="/leftCamViewer/camera/image" to="/rightHSVImageConverter/image2hsv_converter/hsv_video"/>
     <remap from="/leftHSVImageConverter/camera/image" to="/leftCam/camera/raw/image"/>
     <remap from="/rightHSVImageConverter/camera/image" to="/rightCam/camera/raw/image"/>
+    <remap from="/HSVFilter/image/hsv_image" to="/rightHSVImageConverter/image2hsv_converter/hsv_video"/>
 
     <include file="$(find trashbot)/launch/cameraInit.launch"/>
 
@@ -11,6 +13,14 @@
 
     <group ns="rightHSVImageConverter">
         <node pkg="trashbot" name="HSVViewer" type="image2hsv_converter"/>
+    </group>
+
+    <group ns="HSVFilter">
+        <node pkg="trashbot" name="HSVFilter" type="HSVTuner.py"/>
+    </group>
+
+    <group ns="leftCamViewer">
+        <node pkg="trashbot" name="camViewer" type="stream_viewer"/>
     </group>
 
 </launch>

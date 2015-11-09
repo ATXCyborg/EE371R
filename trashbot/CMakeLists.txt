@@ -21,11 +21,11 @@ find_package(catkin REQUIRED COMPONENTS
 ## Uncomment this if the package has a setup.py. This macro ensures
 ## modules and global scripts declared therein get installed
 ## See http://ros.org/doc/api/catkin/html/user_guide/setup_dot_py.html
-# catkin_python_setup()
+ catkin_python_setup()
 
 ################################################
 ## Declare ROS messages, services and actions ##
-################################################
+#################################### ############
 
 ## To declare and build messages, services or actions from within this
 ## package, follow these steps:
@@ -142,10 +142,10 @@ include_directories(
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(trashbot_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(image_converter ${catkin_EXPORTED_TARGETS})
-add_dependencies(webcam_publisher ${catkin_EXPORTED_TARGETS})
-add_dependencies(stream_viewer ${catkin_EXPORTED_TARGETS})
-add_dependencies(image2hsv_converter ${catkin_EXPORTED_TARGETS})
+  add_dependencies(image_converter ${catkin_EXPORTED_TARGETS})
+  add_dependencies(webcam_publisher ${catkin_EXPORTED_TARGETS})
+  add_dependencies(stream_viewer ${catkin_EXPORTED_TARGETS})
+  add_dependencies(image2hsv_converter ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
  target_link_libraries(image_converter ${catkin_LIBRARIES})
