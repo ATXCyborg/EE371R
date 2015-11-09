@@ -134,24 +134,27 @@ include_directories(
 # add_dependencies(trashbot ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
- add_executable(image_converter src/imageConverter.cpp)
- add_executable(webcam_publisher src/webcamPublisher.cpp)
- add_executable(stream_viewer src/webcamSubscriber.cpp)
+ add_executable(image_converter     src/imageConverter.cpp)
+ add_executable(webcam_publisher    src/webcamPublisher.cpp)
+ add_executable(stream_viewer       src/webcamSubscriber.cpp)
  add_executable(image2hsv_converter src/image2HSV.cpp)
+ add_executable(channel_viewer       src/channelViewer.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(trashbot_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-  add_dependencies(image_converter ${catkin_EXPORTED_TARGETS})
-  add_dependencies(webcam_publisher ${catkin_EXPORTED_TARGETS})
-  add_dependencies(stream_viewer ${catkin_EXPORTED_TARGETS})
-  add_dependencies(image2hsv_converter ${catkin_EXPORTED_TARGETS})
+  add_dependencies(image_converter      ${catkin_EXPORTED_TARGETS})
+  add_dependencies(webcam_publisher     ${catkin_EXPORTED_TARGETS})
+  add_dependencies(stream_viewer        ${catkin_EXPORTED_TARGETS})
+  add_dependencies(image2hsv_converter  ${catkin_EXPORTED_TARGETS})
+  add_dependencies(channel_viewer       ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
- target_link_libraries(image_converter ${catkin_LIBRARIES})
- target_link_libraries(webcam_publisher ${catkin_LIBRARIES})
- target_link_libraries(stream_viewer ${catkin_LIBRARIES})
- target_link_libraries(image2hsv_converter ${catkin_LIBRARIES})
+ target_link_libraries(image_converter      ${catkin_LIBRARIES})
+ target_link_libraries(webcam_publisher     ${catkin_LIBRARIES})
+ target_link_libraries(stream_viewer        ${catkin_LIBRARIES})
+ target_link_libraries(image2hsv_converter  ${catkin_LIBRARIES})
+ target_link_libraries(channel_viewer       ${catkin_LIBRARIES})
 
 #############
 ## Install ##
