@@ -38,10 +38,14 @@ const int MAX_NUM_OBJECTS = 50;
 const int MIN_OBJECT_AREA = 20 * 20;
 const int MAX_OBJECT_AREA = FRAME_HEIGHT*FRAME_WIDTH / 1.5;
 //names that will appear at the top of each window
-const string windowName = "Original Image";
-const string windowName1 = "HSV Image";
-const string windowName2 = "Thresholded Image";
-const string windowName3 = "After Morphological Operations";
+const string window1 = "left cam";
+const string HSVwindow1 = "HSV Image 1";
+const string thresWindow1 = "Thresholded Image 1";
+const string morphWindow1 = "After Morphological Operations 1";
+const string window2 = "right cam";
+const string HSVwindow2 = "HSV Image 2";
+const string thresWindow2 = "Thresholded Image 2";
+const string morphWindow2 = "After Morphological Operations 2";
 const string trackbarWindowName = "Trackbars";
 
 bool calibrationMode;//used for showing debugging windows, trackbars etc.
@@ -303,30 +307,49 @@ int main(int argc, char* argv[])
 {
 	//some boolean variables for different functionality within this
 	//program
+	
 	bool trackObjects = true;
 	bool useMorphOps = true;
 	calibrationMode = true;
 	//Matrix to store each frame of the webcam feed
-	Mat cameraFeed;
+	Mat leftCameraFeed;
+	Mat rightCameraFeed;
 	//matrix storage for HSV image
 	Mat HSV;
+	Mat HSV2;
 	//matrix storage for binary threshold image
-	Mat threshold;
+	Mat threshold1;
+	Mat threshold2;
 	//x and y values for the location of the object
-	int x = 0, y = 0;
+	int x1 = 0, y1 = 0;
+	int x2 = 0, y2 = 0;
 	//video capture object to acquire webcam feed
 	VideoCapture capture;
+	VideoCapture capture2;
 	//open capture object at location zero (default location for webcam)
 	capture.open(0);
+	capture2.open(1);
+
+	//testing
+	if (!capture.isOpened())
+		cout << "cam1 is not open yet" << endl;
+	if (!capture2.isOpened())
+		cout << "cam2 is not open yet" << endl;
+
 	//set height and width of capture frame
 	capture.set(CV_CAP_PROP_FRAME_WIDTH, FRAME_WIDTH);
 	capture.set(CV_CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT);
+	capture2.set(CV_CAP_PROP_FRAME_WIDTH, FRAME_WIDTH);
+	capture2.set(CV_CAP_PROP_FRAME_HEIGHT, FRAME_HEIGHT);
 	//must create a window before setting mouse callback
-	cv::namedWindow(windowName);
+	cv::namedWindow(window1);
+	cv::namedWindow(window2);
 	//set mouse callback function to be active on "Webcam Feed" window
 	//we pass the handle to our "frame" matrix so that we can draw a rectangle to it
 	//as the user clicks and drags the mouse
-	cv::setMouseCallback(windowName, clickAndDrag_Rectangle, &cameraFeed);
+	cv::setMouseCallback(window1, clickAndDrag_Rectangle, &leftCameraFeed);
+	cv::setMouseCallback(window2, clickAndDrag_Rectangle, &rightCameraFeed);
+
 	//initiate mouse move and drag to false 
 	mouseIsDragging = false;
 	mouseMove = false;
@@ -336,39 +359,60 @@ int main(int argc, char* argv[])
 	//all of our operations will be performed within this loop
 	while (1){
 		//store image to matrix
-		capture.read(cameraFeed);
+		capture.read(leftCameraFeed);
+		capture2.read(rightCameraFeed);
+
+		//testing
+		imshow(window1, leftCameraFeed);
+		imshow(window2, rightCameraFeed);
+
 		//convert frame from BGR to HSV colorspace
-		cvtColor(cameraFeed, HSV, COLOR_BGR2HSV);
+		cvtColor(leftCameraFeed, HSV, COLOR_BGR2HSV);
+		cvtColor(rightCameraFeed, HSV2, COLOR_BGR2HSV);
+
 		//set HSV values from user selected region
-		recordHSV_Values(cameraFeed, HSV);
+		recordHSV_Values(leftCameraFeed, HSV);
+		recordHSV_Values(rightCameraFeed, HSV2);
+
 		//filter HSV image between values and store filtered image to
 		//threshold matrix
-		inRange(HSV, Scalar(H_MIN, S_MIN, V_MIN), Scalar(H_MAX, S_MAX, V_MAX), threshold);
+		inRange(HSV, Scalar(H_MIN, S_MIN, V_MIN), Scalar(H_MAX, S_MAX, V_MAX), threshold1);
+		inRange(HSV2, Scalar(H_MIN, S_MIN, V_MIN), Scalar(H_MAX, S_MAX, V_MAX), threshold2);
+
 		//perform morphological operations on thresholded image to eliminate noise
 		//and emphasize the filtered object(s)
-		if (useMorphOps)
-			morphOps(threshold);
+		if (useMorphOps) {
+			morphOps(threshold1);
+			morphOps(threshold2);
+		}
 		//pass in thresholded frame to our object tracking function
 		//this function will return the x and y coordinates of the
 		//filtered object
-		if (trackObjects)
-			trackFilteredObject(x, y, threshold, cameraFeed);
+		if (trackObjects) {
+			trackFilteredObject(x1, y1, threshold1, leftCameraFeed);
+			trackFilteredObject(x2, y2, threshold2, rightCameraFeed);
+		}
+
 
 		//show frames 
 		if (calibrationMode == true){
 
 			//create slider bars for HSV filtering
-			createTrackbars();
-			imshow(windowName1, HSV);
-			imshow(windowName2, threshold);
+			
+			//createTrackbars();
+			imshow(window1, leftCameraFeed);
+			imshow(thresWindow1, threshold1);
+			
+
+			//createTrackbars();
+			imshow(window2, rightCameraFeed);
+			imshow(thresWindow2, threshold2);
 		}
 		else{
 
-			destroyWindow(windowName1);
-			destroyWindow(windowName2);
-			destroyWindow(trackbarWindowName);
+			destroyWindow(thresWindow1);
+			destroyWindow(thresWindow2);
 		}
-		imshow(windowName, cameraFeed);
 		
 
 
