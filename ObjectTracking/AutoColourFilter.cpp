@@ -16,8 +16,11 @@
 #include <sstream>
 #include <string>
 #include <iostream>
+#include <math.h>
 #include "opencv\highgui.h"
 #include "opencv\cv.h"
+
+#define PI 3.14159265	//because everyone loves pi!
 
 using namespace cv;
 using namespace std;
@@ -286,8 +289,11 @@ void trackFilteredObject(int &x, int &y, Mat threshold, Mat &cameraFeed){
 					//save index of largest contour to use with drawContours
 					largestIndex = index;
 				}
-				else objectFound = false;
-
+				else{
+					objectFound = false;
+					x = -1;
+					y = -1;
+				}
 
 			}
 			//let user know you found an object
@@ -327,8 +333,14 @@ int main(int argc, char* argv[])
 	VideoCapture capture;
 	VideoCapture capture2;
 	//open capture object at location zero (default location for webcam)
-	capture.open(0);
-	capture2.open(1);
+	capture.open(1);
+	capture2.open(2);
+	//constants used for stereo algorithm to track object's distance and angle of elevation
+	double W = 8.5; //inches between focal points of webcams
+	double theta_w_x = 60; //half-angle of field of view in x direction
+	double theta_w_y = 30; //half-angle of field of view in y direction
+	double a_x = 2*tan(theta_w_x)/1910;
+	double a_y = 2*tan(theta_w_y)/1080;
 
 	//testing
 	if (!capture.isOpened())
@@ -393,6 +405,26 @@ int main(int argc, char* argv[])
 			trackFilteredObject(x2, y2, threshold2, rightCameraFeed);
 		}
 
+		//Now to start calculating distance from object to centerline of cameras and its angle of elevation
+		if ((x1 != -1) && (x2 != -1) && (y1 != -1) && (y2 != -1)){
+			//shifting coordinates so (0,0) is the center of the image
+			double x_1_p = x1 - (FRAME_WIDTH / 2);
+			double y_1_p = (FRAME_HEIGHT / 2) - y1;
+			double x_2_p = x2 - (FRAME_WIDTH / 2);
+			double y_2_p = (FRAME_HEIGHT / 2) - y2;
+			
+			//Intermediate values in calculations that are used for all future calculations (prepare for more tan functions)
+			double b_1_x = tan(PI/2 - abs(atan(a_x * x_1_p)));
+			double b_1_y = a_y * y_1_p;
+			double b_2 = tan(PI/2 - abs(atan(a_x * x_2_p)));
+
+			//Now for the distance and angle of elevation values!
+			double g_x = (W * b_1_x * b_2)/(b_1_x + b_2);//distance from camera focal points
+			double w_1 = (W * b_2)/(b_1_x + b_2);
+			double g_y = b_1_y * sqrt(pow(g_x,2.0) + pow(w_1,2.0));
+			double elevation = tan(g_y / g_x)*180/PI;
+			printf("Distance: %.1f \tAngle of Elevation(deg): %.1f\n",g_x,elevation);
+		}
 
 		//show frames 
 		if (calibrationMode == true){
@@ -420,12 +452,7 @@ int main(int argc, char* argv[])
 		//image will not appear without this waitKey() command
 		//also use waitKey command to capture keyboard input
 		if (waitKey(30) == 99) calibrationMode = !calibrationMode;//if user presses 'c', toggle calibration mode
+
 	}
-
-
-
-
-
-
 	return 0;
 }
